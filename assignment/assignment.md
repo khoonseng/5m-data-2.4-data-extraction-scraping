@@ -36,7 +36,24 @@ def parse_and_extract_rows(soup: BeautifulSoup):
 Answer:
 
 ```python
+rows = []
+# replace for loop with while loop, based on pagination marker
+has_next_page = True
 
+page_index = 1
+while has_next_page:
+    r = requests.get(f"https://www.scrapethissite.com/pages/forms/?page_num={page_index}")
+    page_soup = BeautifulSoup(r.text, "html.parser")
+    next_page_marker = page_soup.find('a', {'aria-label': 'Next'})
+    has_next_page = next_page_marker
+
+    for row_dict in parse_and_extract_rows(page_soup):
+        rows.append(row_dict)
+    
+    # pause for 1 second between requests
+    time.sleep(1)
+    
+    page_index += 1
 ```
 
 ## Submission
